@@ -12,17 +12,17 @@ import java.util.Scanner;
  */
 public class Feeder {
 
-    public static void main(String... args) {
-        TradingAlgorithm tradingAlgorithm = new TradingAlgorithmImpl();
-        Scanner scanner = new Scanner(System.in);
-        while(scanner.hasNext()) {
-            Price p = new Price();
-            p.setName(scanner.next());
-            p.setPrice(scanner.nextDouble());
+  public static void main(String... args) {
+    TradingAlgorithm tradingAlgorithm = new TradingAlgorithmImpl();
+    Scanner scanner = new Scanner(System.in);
+    while (scanner.hasNext()) {
+      Price p = new Price();
+      p.setName(scanner.next());
+      p.setPrice(scanner.nextDouble());
 
-            //Pass it on to trade algorithm
-            Trade t = tradingAlgorithm.buildTrades(p);
-            System.out.println(t.toString());
-        }
+      //Pass it on to trade algorithm
+      Trade t = tradingAlgorithm.buildTrades(p);
+      System.out.println(t.toString());
     }
+  }
 }

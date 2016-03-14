@@ -8,5 +8,5 @@ import com.trading.model.Trade;
  */
 public interface TradingAlgorithm {
 
-    Trade buildTrades(Price price);
+  Trade buildTrades(Price price);
 }
