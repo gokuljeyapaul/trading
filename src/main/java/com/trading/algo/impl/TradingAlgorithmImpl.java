@@ -19,12 +19,12 @@ public class TradingAlgorithmImpl implements TradingAlgorithm {
 
   public Trade buildTrades(Price price) {
 
-    Trade t = new Trade();
+    Trade t = null;
     LinkedList<Price> filteredPrices = new LinkedList<Price>();
 
     //Add the price to the list
     if (priceMap.containsKey(price.getName())) {
-      if (priceMap.get(price.getName()).size() >= 4) {
+      if (priceMap.get(price.getName()).size() > 4) {
         priceMap.get(price.getName()).removeFirst();
       }
       priceMap.get(price.getName()).addLast(price);
@@ -39,6 +39,7 @@ public class TradingAlgorithmImpl implements TradingAlgorithm {
     });
 
     if (possibleTradePriceMap.get(price.getName()).size() > 0) {
+      t = new Trade();
       t.setName(price.getName());
       t.setDirection(Direction.BUY);
       t.setPrice(price.getPrice());
