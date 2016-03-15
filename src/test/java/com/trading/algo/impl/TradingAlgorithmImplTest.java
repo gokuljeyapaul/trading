@@ -1,6 +1,7 @@
 package com.trading.algo.impl;
 
 import com.trading.algo.TradingAlgorithm;
+import com.trading.model.Direction;
 import com.trading.model.Price;
 import com.trading.model.Trade;
 import org.junit.Before;
@@ -9,6 +10,8 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.TestCase.assertNull;
 
 /**
@@ -49,9 +52,22 @@ public class TradingAlgorithmImplTest {
 
     assertNull("Trade for "+p0+" "+p1+" "+p2+" has to be null but was "+t, t);
 
+    Price p3 = new Price();
+    p3.setName("AAPL");
+    p3.setPrice(2204.00);
+    t = tradingAlgorithm.buildTrades(p3);
 
+    assertNotNull("Trade for "+p0+" "+p1+" "+p2+" "+p3+" has to be null but was "+t, t);
+    assertEquals(p3.getName(), t.getName());
+    assertEquals(p3.getPrice(), t.getPrice());
+    assertEquals(t.getDirection(), Direction.BUY);
 
+    Price p4 = new Price();
+    p4.setName("AAPL");
+    p4.setPrice(2202.00);
+    t = tradingAlgorithm.buildTrades(p4);
 
+    assertNull("Trade for "+p4+" has to be null but was "+t, t);
   }
 
 }
