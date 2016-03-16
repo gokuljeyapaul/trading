@@ -18,7 +18,7 @@ public class InMemoryPriceStorageImpl implements PriceStorage {
   public synchronized boolean storePrice(Price price) {
     String productName = price.getName();
     if (priceMap.containsKey(productName)) {
-      if (priceMap.get(productName).size() > ROLLING_WINDOW_SIZE) {
+      if (priceMap.get(productName).size() + 1 > ROLLING_WINDOW_SIZE) {
         priceMap.get(productName).removeFirst();
       }
       priceMap.get(productName).addLast(price);

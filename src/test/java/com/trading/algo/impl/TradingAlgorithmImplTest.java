@@ -67,7 +67,10 @@ public class TradingAlgorithmImplTest {
     p4.setPrice(2202.00);
     t = tradingAlgorithm.buildTrades(p4);
 
-    assertNull("Trade for "+p4+" has to be null but was "+t, t);
+    assertNotNull("Trade for "+p4+" has to be null but was "+t, t);
+    assertEquals(p4.getName(), t.getName());
+    assertEquals(p4.getPrice(), t.getPrice());
+    assertEquals(t.getDirection(), Direction.BUY);
   }
 
 }
