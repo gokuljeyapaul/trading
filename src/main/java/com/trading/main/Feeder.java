@@ -15,16 +15,23 @@ public class Feeder {
   public static void main(String... args) {
     TradingAlgorithm tradingAlgorithm = new TradingAlgorithmImpl();
     Scanner scanner = new Scanner(System.in);
-    while (scanner.hasNext()) {
-      Price p = new Price();
-      p.setName(scanner.next());
-      p.setPrice(scanner.nextDouble());
+    try{
+      while (scanner.hasNext()) {
+        Price p = new Price();
+        p.setName(scanner.next());
+        p.setPrice(scanner.nextDouble());
 
-      //Pass it on to trade algorithm
-      Trade t = tradingAlgorithm.buildTrades(p);
-      if(t != null){
-        System.out.println(t.getName() + " " + t.getDirection() + " " + t.getPrice() + " " + t.getQty());
+        //Pass it on to trade algorithm
+        Trade t = tradingAlgorithm.buildTrades(p);
+        if(t != null){
+          System.out.println(t.getName() + " " + t.getDirection() + " " + t.getPrice() + " " + t.getQty());
+        }
       }
+    } catch (java.util.InputMismatchException e) {
+        System.err.println("Invalid input, can't process further");
+    } catch (java.lang.Exception e) {
+        System.err.println("Internal error, can't process further : "+e.getMessage());
     }
+
   }
 }

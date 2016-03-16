@@ -33,7 +33,7 @@ public class TradingAlgorithmImpl implements TradingAlgorithm {
     priceStorage.storePrice(price);
     //Retrieve the prices for a product
     allPrices = priceStorage.getPrices(productName);
-    
+
     if(allPrices == null || allPrices.size() != TRADING_CALCULATION_APPROVED_SIZE) {
       return t;
     }
