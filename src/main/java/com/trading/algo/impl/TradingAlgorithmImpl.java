@@ -38,7 +38,7 @@ public class TradingAlgorithmImpl implements TradingAlgorithm {
       return t;
     }
 
-    allPrices.stream().filter(this.isOldestPriceGreaterThanAveragePrice(allPrices)).forEach(filteredPrices::add);
+    allPrices.stream().filter(this.getOldestPriceGreaterThanAveragePrice(allPrices)).forEach(filteredPrices::add);
     possibleTradePriceMap.put(productName, filteredPrices);
 
     if (possibleTradePriceMap.get(productName)!= null &&
@@ -53,7 +53,7 @@ public class TradingAlgorithmImpl implements TradingAlgorithm {
     return t;
   }
 
-  private static Predicate<Price> isOldestPriceGreaterThanAveragePrice(LinkedBlockingDeque<Price> priceList) {
+  private static Predicate<Price> getOldestPriceGreaterThanAveragePrice(LinkedBlockingDeque<Price> priceList) {
     return p -> (priceList.stream().mapToDouble(Price::getPrice).average().getAsDouble() > priceList.peekFirst().getPrice());
   }
 }
