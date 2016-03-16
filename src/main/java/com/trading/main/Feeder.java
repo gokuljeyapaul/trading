@@ -22,7 +22,9 @@ public class Feeder {
 
       //Pass it on to trade algorithm
       Trade t = tradingAlgorithm.buildTrades(p);
-      System.out.println(t.toString());
+      if(t != null){
+        System.out.println(t.getName() + " " + t.getDirection() + " " + t.getPrice() + " " + t.getQty());
+      }
     }
   }
 }

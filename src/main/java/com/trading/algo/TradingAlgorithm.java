@@ -8,7 +8,7 @@ import com.trading.model.Trade;
  */
 public interface TradingAlgorithm {
 
-  Integer ROLLING_WINDOW_SIZE = 4;
+  Integer TRADING_CALCULATION_APPROVED_SIZE = 4;
 
   Trade buildTrades(Price price);
 }

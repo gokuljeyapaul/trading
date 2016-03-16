@@ -4,45 +4,44 @@ import com.trading.algo.TradingAlgorithm;
 import com.trading.model.Direction;
 import com.trading.model.Price;
 import com.trading.model.Trade;
+import com.trading.storage.PriceStorage;
+import com.trading.storage.impl.InMemoryPriceStorageImpl;
 
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
+
 
 /**
  * Created by jeygokul on 3/13/2016.
  */
 public class TradingAlgorithmImpl implements TradingAlgorithm {
 
-  private ConcurrentHashMap<String, LinkedList<Price>> priceMap = new ConcurrentHashMap<String, LinkedList<Price>>();
-  private Map<String, LinkedList<Price>> possibleTradePriceMap = new ConcurrentHashMap<String, LinkedList<Price>>();
+  private Map<String, LinkedBlockingDeque<Price>> possibleTradePriceMap = new ConcurrentHashMap<String, LinkedBlockingDeque<Price>>();
 
-  public Trade buildTrades(Price price) {
+  private PriceStorage priceStorage = new InMemoryPriceStorageImpl();
+
+  public synchronized Trade buildTrades(Price price) {
 
     Trade t = null;
-    LinkedList<Price> filteredPrices = new LinkedList<Price>();
+    LinkedBlockingDeque<Price> filteredPrices = new LinkedBlockingDeque<Price>();
+    LinkedBlockingDeque<Price> allPrices = null;
+    String productName = price.getName();
 
-    //Add the price to the list
-    if (priceMap.containsKey(price.getName())) {
-      if (priceMap.get(price.getName()).size() > ROLLING_WINDOW_SIZE) {
-        priceMap.get(price.getName()).removeFirst();
-      }
-      priceMap.get(price.getName()).addLast(price);
-    } else {
-      LinkedList<Price> priceList = new LinkedList<Price>();
-      priceList.addLast(price);
-      priceMap.put(price.getName(), priceList);
+    //Store the price
+    priceStorage.storePrice(price);
+    //Retrieve the prices for a product
+    allPrices = priceStorage.getPrices(productName);
+    if(allPrices == null || allPrices.size() != TRADING_CALCULATION_APPROVED_SIZE) {
+      return t;
     }
 
-    priceMap.forEach((productName, prices) -> {
-      prices.stream().filter(this.isOldestPriceGreaterThanAveragePrice(prices)).forEach(filteredPrices::add);
-      possibleTradePriceMap.put(productName, filteredPrices);
-    });
+    allPrices.stream().filter(this.isOldestPriceGreaterThanAveragePrice(allPrices)).forEach(filteredPrices::add);
+    possibleTradePriceMap.put(productName, filteredPrices);
 
-    if (possibleTradePriceMap.get(price.getName())!= null &&
-            possibleTradePriceMap.get(price.getName()).size() > 0) {
+    if (possibleTradePriceMap.get(productName)!= null &&
+            possibleTradePriceMap.get(productName).size() > 0) {
       t = new Trade();
       t.setName(price.getName());
       t.setDirection(Direction.BUY);
@@ -53,9 +52,7 @@ public class TradingAlgorithmImpl implements TradingAlgorithm {
     return t;
   }
 
-  private static Predicate<Price> isOldestPriceGreaterThanAveragePrice(LinkedList<Price> priceList) {
-    //System.out.println("Average : "+priceList.stream().mapToDouble(Price::getPrice).average().getAsDouble());
-    //System.out.println("First Price : "+priceList.peekFirst().getPrice());
-    return p -> (priceList.size() == 4) && (priceList.stream().mapToDouble(Price::getPrice).average().getAsDouble() > priceList.peekFirst().getPrice());
+  private static Predicate<Price> isOldestPriceGreaterThanAveragePrice(LinkedBlockingDeque<Price> priceList) {
+    return p -> (priceList.stream().mapToDouble(Price::getPrice).average().getAsDouble() > priceList.peekFirst().getPrice());
   }
 }
